@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="FOIL S100" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile">
+    <makefile filename="$PROJECT_DIR$/../AVESC\Makefile" target="all" workingDirectory="$PROJECT_DIR$" arguments="STYPE=SHUNT100 MTYPE=FOIL BTYPE=FOIL">
+      <envs />
+    </makefile>
+    <method v="2">
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="Clean" run_configuration_type="MAKEFILE_TARGET_RUN_CONFIGURATION" />
+    </method>
+  </configuration>
+</component>

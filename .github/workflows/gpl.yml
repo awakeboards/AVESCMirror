@@ -1,0 +1,25 @@
+name: Sync to public mirror (GPL-3.0)
+
+on:
+  release:
+    types: [released]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: pandoc/latex
+    steps:
+      - uses: actions/checkout@v2
+      - name: Pushes to public mirror
+        id: push_directory
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source-directory: './'
+          destination-github-username: 'awakeboards'
+          destination-repository-name: 'AVESCMirror'
+          user-email: dev@awakeboards.com
+          commit-message: Update
+          target-branch: master
