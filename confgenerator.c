@@ -952,35 +952,7 @@ void confgenerator_set_defaults_appconf(app_configuration *conf) {
 	conf->imu_conf.gyro_offset_comp_clamp = APPCONF_IMU_G_OFFSET_COMP_CLAMP;
 
     // Manually added
-#ifdef ASTRO
-    conf->app_awake.motor_type = AW_MOTOR_ASTRO;
-#endif
-#ifdef AMOTOR
-    conf->app_awake.motor_type = AW_MOTOR_AMOTOR;
-#endif
-#ifdef FOIL
-    conf->app_awake.motor_type = AW_MOTOR_FOIL;
-#endif
-
-    // board type
-#ifdef B_RV1
-    conf->app_awake.board_type = AW_BOARD_RV1;
-#endif
-#ifdef B_RV3
-    conf->app_awake.board_type = AW_BOARD_RV3;
-#endif
-#ifdef B_RVS
-    conf->app_awake.board_type = AW_BOARD_RVS;
-#endif
-#ifdef B_FOIL
-    conf->app_awake.board_type = AW_BOARD_FOIL;
-#endif
-
-    // shunt type
-#ifdef SHUNT100
-    conf->app_awake.shunt_type = AW_SHUNT_100;
-#endif
-#ifdef SHUNT200
-    conf->app_awake.shunt_type = AW_SHUNT_200;
-#endif
+    conf->app_awake.motor_type = AW_MOTOR;
+    conf->app_awake.board_type = AW_BOARD;
+    conf->app_awake.shunt_type = AW_SHUNT;
 }

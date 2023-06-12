@@ -17,7 +17,7 @@ for i=thr_input+1
     thr_curve(i) = thr_curve(i)     *   1.00; % extreme
 	thr_curve2(i) = thr_curve2(i)   *   0.78; % sport
 	thr_curve3(i) = thr_curve3(i)   *   0.64; % eco
-	thr_curve4(i) = thr_curve4(i)   *   0.38; % slow
+	thr_curve4(i) = thr_curve4(i)   *   0.21; % slow
 end
 
 figure(1)

@@ -13,13 +13,13 @@ static float aw_startup_current_logic(systime_t time_zero_throttle);
 static float aw_throttle_to_current(uint8_t throttle, uint8_t mode);
 
 void aw_init_throttle(void) {
-    if (((app_configuration*) app_get_configuration())->app_awake.board_type == AW_BOARD_FOIL) {
-        aw_curve_extreme = aw_curve_foil_extreme;
-        aw_curve_sport = aw_curve_foil_sport;
-        aw_curve_eco = aw_curve_foil_eco;
-        aw_curve_kids = aw_curve_foil_kids; // slow mode
+    if (((app_configuration*) app_get_configuration())->app_awake.board_type == AW_BOARD_VINGA) {
+        aw_curve_extreme = aw_curve_vinga_extreme;
+        aw_curve_sport = aw_curve_vinga_sport;
+        aw_curve_eco = aw_curve_vinga_eco;
+        aw_curve_kids = aw_curve_vinga_kids; // slow mode
 
-        aw_min_active_current = AW_FOIL_MIN_ACTIVE_CURRENT;
+        aw_min_active_current = AW_VINGA_MIN_ACTIVE_CURRENT;
     } else {
         aw_curve_extreme = aw_curve_ravik_extreme;
         aw_curve_sport = aw_curve_ravik_sport;

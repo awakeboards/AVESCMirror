@@ -58,6 +58,7 @@ typedef struct {
 	float v_beta;
 	float mod_d;
 	float mod_q;
+    float mod_q_filter;
 	float id;
 	float iq;
 	float id_filter;
@@ -3307,18 +3308,20 @@ static void control_current(volatile motor_all_state_t *motor, float dt) {
 	UTILS_LP_FAST(state_m->id_filter, state_m->id, conf_now->foc_current_filter_const);
 	UTILS_LP_FAST(state_m->iq_filter, state_m->iq, conf_now->foc_current_filter_const);
 
-	float d_gain_scale = 1.0;
-	float max_mod_norm = fabsf(state_m->duty_now / max_duty);
-	if (max_duty < 0.01) {
-		max_mod_norm = 1.0;
-	}
-	if (max_mod_norm > conf_now->foc_d_gain_scale_start) {
-		d_gain_scale = utils_map(max_mod_norm, conf_now->foc_d_gain_scale_start, 1.0,
-				1.0, conf_now->foc_d_gain_scale_max_mod);
-		if (d_gain_scale < conf_now->foc_d_gain_scale_max_mod) {
-			d_gain_scale = conf_now->foc_d_gain_scale_max_mod;
-		}
-	}
+    float d_gain_scale = 1.0;
+    if (conf_now->foc_d_gain_scale_start < 0.99) {
+        float max_mod_norm = fabsf(state_m->duty_now / max_duty);
+        if (max_duty < 0.01) {
+            max_mod_norm = 1.0;
+        }
+        if (max_mod_norm > conf_now->foc_d_gain_scale_start) {
+            d_gain_scale = utils_map(max_mod_norm, conf_now->foc_d_gain_scale_start, 1.0,
+                                     1.0, conf_now->foc_d_gain_scale_max_mod);
+            if (d_gain_scale < conf_now->foc_d_gain_scale_max_mod) {
+                d_gain_scale = conf_now->foc_d_gain_scale_max_mod;
+            }
+        }
+    }
 
 	float Ierr_d = state_m->id_target - state_m->id;
 	float Ierr_q = state_m->iq_target - state_m->iq;
@@ -3366,39 +3369,32 @@ static void control_current(volatile motor_all_state_t *motor, float dt) {
 	state_m->vd -= dec_vd;
 	state_m->vq += dec_vq + dec_bemf;
 
-	float max_v_mag = (2.0 / 3.0) * max_duty * SQRT3_BY_2 * state_m->v_bus;
+    // Calculate the max length of the voltage space vector without overmodulation.
+    // Is simply 1/sqrt(3) * v_bus. See https://microchipdeveloper.com/mct5001:start. Adds margin with max_duty.
+    float max_v_mag = ONE_BY_SQRT3 * max_duty * state_m->v_bus;
 
-	// Saturation
-	utils_saturate_vector_2d((float*)&state_m->vd, (float*)&state_m->vq, max_v_mag);
-	state_m->mod_d = state_m->vd / ((2.0 / 3.0) * state_m->v_bus);
-	state_m->mod_q = state_m->vq / ((2.0 / 3.0) * state_m->v_bus);
+    // Saturation and anti-windup. Notice that the d-axis has priority as it controls field
+    // weakening and the efficiency.
+    float vd_presat = state_m->vd;
+    utils_truncate_number_abs((float*)&state_m->vd, max_v_mag);
+    state_m->vd_int += (state_m->vd - vd_presat);
 
-	// Integrator windup protection
-	// This is important, tricky and probably needs improvement.
-	// Currently we start by truncating the d-axis and then the q-axis with the magnitude that is
-	// left. Axis decoupling is taken into account in the truncation. How to do that best is also
-	// an open question...
+    float max_vq = sqrtf(SQ(max_v_mag) - SQ(state_m->vd));
+    float vq_presat = state_m->vq;
+    utils_truncate_number_abs((float*)&state_m->vq, max_vq);
+    state_m->vq_int += (state_m->vq - vq_presat);
 
-	// Take both cross and back emf decoupling into consideration. Seems to make the control
-	// noisy at full modulation.
-//	utils_truncate_number((float*)&state_m->vd_int, -max_v_mag + dec_vd, max_v_mag + dec_vd);
-//	float mag_left = sqrtf(SQ(max_v_mag) - SQ(state_m->vd_int - dec_vd));
-//	utils_truncate_number((float*)&state_m->vq_int, -mag_left - (dec_vq + dec_bemf), mag_left - (dec_vq + dec_bemf));
+    utils_saturate_vector_2d((float*)&state_m->vd, (float*)&state_m->vq, max_v_mag);
 
-	// Take only back emf decoupling into consideration. Seems to work best.
-	utils_truncate_number((float*)&state_m->vd_int, -max_v_mag, max_v_mag);
-	float mag_left = sqrtf(SQ(max_v_mag) - SQ(state_m->vd_int));
-	utils_truncate_number((float*)&state_m->vq_int, -mag_left - dec_bemf, mag_left - dec_bemf);
-
-	// Ignore decoupling. Works badly when back emf decoupling is used, probably not
-	// the best way to go.
-//	utils_truncate_number((float*)&state_m->vd_int, -max_v_mag, max_v_mag);
-//	float mag_left = sqrtf(SQ(max_v_mag) - SQ(state_m->vd_int));
-//	utils_truncate_number((float*)&state_m->vq_int, -mag_left, mag_left);
-
-	// This is how anti-windup was done in FW < 4.0. Does not work well when there is too much D axis voltage.
-//	utils_truncate_number((float*)&state_m->vd_int, -max_v_mag, max_v_mag);
-//	utils_truncate_number((float*)&state_m->vq_int, -max_v_mag, max_v_mag);
+    // mod_d and mod_q are normalized such that 1 corresponds to the max possible voltage:
+    //    voltage_normalize = 1/(2/3*V_bus)
+    // This includes overmodulation and therefore cannot be made in any direction.
+    // Note that this scaling is different from max_v_mag, which is without over modulation.
+    const float voltage_normalize = 1.5 / state_m->v_bus;
+    state_m->mod_d = state_m->vd * voltage_normalize;
+    state_m->mod_q = state_m->vq * voltage_normalize;
+    UTILS_NAN_ZERO(state_m->mod_q_filter);
+    UTILS_LP_FAST(state_m->mod_q_filter, state_m->mod_q, 0.2);
 
 	// TODO: Have a look at this?
 #ifdef HW_HAS_INPUT_CURRENT_SENSOR
@@ -3441,7 +3437,7 @@ static void control_current(volatile motor_all_state_t *motor, float dt) {
 		if (motor->m_hfi.est_done_cnt < conf_now->foc_hfi_start_samples) {
 			hfi_voltage = conf_now->foc_hfi_voltage_start;
 		} else {
-			hfi_voltage = utils_map(fabsf(state_m->iq), 0.0, conf_now->l_current_max,
+			hfi_voltage = utils_map(fabsf(state_m->iq), -0.01, conf_now->l_current_max,
 									conf_now->foc_hfi_voltage_run, conf_now->foc_hfi_voltage_max);
 		}
 

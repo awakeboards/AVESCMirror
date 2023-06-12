@@ -1,20 +1,3 @@
-/*
-	Copyright 2018 Benjamin Vedder	benjamin@vedder.se
-
-	This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    */
-
 #include "hw.h"
 
 #include "ch.h"
@@ -23,6 +6,8 @@
 #include "utils.h"
 #include <math.h>
 #include "mc_interface.h"
+
+aw_hw_type avesc_hw_type = AW_AVESC_2_3; // Assume 2.3 by default
 
 void hw_init_gpio(void) {
 	// GPIO clock enable
@@ -97,6 +82,20 @@ void hw_init_gpio(void) {
 	palSetPadMode(GPIOC, 3, PAL_MODE_INPUT_ANALOG);
 	palSetPadMode(GPIOC, 4, PAL_MODE_INPUT_ANALOG);
 	palSetPadMode(GPIOC, 5, PAL_MODE_INPUT_ANALOG);
+
+    // AVESC HW type detection
+    palSetPadMode(GPIOC, 11, PAL_MODE_INPUT); // (BRD_VER_2) Shunt type (Hi: 200, Lo: 100)
+    palSetPadMode(GPIOC, 10, PAL_MODE_INPUT); // (BRD_VER_1) HW version 1
+    palSetPadMode(GPIOA, 15, PAL_MODE_INPUT); // (BRD_VER_0) HW version 2
+
+    bool ver1 = palReadPad(GPIOC, 10);
+    bool ver2 = palReadPad(GPIOA, 15);
+
+    if (ver1 == true && ver2 == true) {
+        avesc_hw_type = AW_AVESC_2_5;
+    } else {
+        avesc_hw_type = AW_AVESC_2_3;
+    }
 }
 
 void hw_setup_adc_channels(void) {
@@ -158,13 +157,16 @@ float avesc_get_temp(void) {
 }
 
 float aw_hw_avesc_shunt_factor(void) {
-    // TODO: if right hw, determine this from resistors
-
-#ifdef SHUNT100
-    return AW_SHUNT100_CURRENT_AMP_GAIN * AW_SHUNT100_CURRENT_SHUNT_RES;
+#if AW_SHUNT == DEF_AW_SH100
+    return AW_SH100_CURRENT_AMP_GAIN * AW_SH100_CURRENT_SHUNT_RES;
 #endif
 
-#ifdef SHUNT200
-    return AW_SHUNT200_CURRENT_AMP_GAIN * AW_SHUNT200_CURRENT_SHUNT_RES;
+#if AW_SHUNT == DEF_AW_SH200
+    return AW_SH200_CURRENT_AMP_GAIN * AW_SH200_CURRENT_SHUNT_RES;
 #endif
+}
+
+bool aw_is_hw_supported(void) {
+    //return avesc_hw_type == AW_AVESC_2_3;
+    return true; // disable detection for now as older AVESCs don't have those resistors mounted at all
 }

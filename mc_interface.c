@@ -83,6 +83,7 @@ typedef struct {
 	float m_motor_current_unbalance;
 	float m_motor_current_unbalance_error_rate;
 	float m_f_samp_now;
+    float aw_m_curr_filt;
 } motor_if_state_t;
 
 // Private variables
@@ -1949,9 +1950,12 @@ static void update_override_limits(volatile motor_if_state_t *motor, volatile mc
 		}
 	}
 
+    float lo_min_mot = l_current_min_tmp;
+    float lo_max_mot = l_current_max_tmp;
+
 	// Temperature MOTOR
-	float lo_min_mot = l_current_min_tmp;
-	float lo_max_mot = l_current_max_tmp;
+    // Motor temperature handling is done on the battery
+	/*
 	if (motor->m_temp_motor < conf->l_temp_motor_start) {
 		// Keep values
 	} else if (motor->m_temp_motor > conf->l_temp_motor_end) {
@@ -1973,14 +1977,14 @@ static void update_override_limits(volatile motor_if_state_t *motor, volatile mc
 		if (fabsf(l_current_max_tmp) > maxc) {
 			lo_max_mot = SIGN(l_current_max_tmp) * maxc;
 		}
-	}
+	}*/
 
 	// Decreased temperatures during acceleration
 	// in order to still have braking torque available
 	const float temp_fet_accel_start = utils_map(conf->l_temp_accel_dec, 0.0, 1.0, conf->l_temp_fet_start, 25.0);
 	const float temp_fet_accel_end = utils_map(conf->l_temp_accel_dec, 0.0, 1.0, conf->l_temp_fet_end, 25.0);
-	const float temp_motor_accel_start = utils_map(conf->l_temp_accel_dec, 0.0, 1.0, conf->l_temp_motor_start, 25.0);
-	const float temp_motor_accel_end = utils_map(conf->l_temp_accel_dec, 0.0, 1.0, conf->l_temp_motor_end, 25.0);
+	//const float temp_motor_accel_start = utils_map(conf->l_temp_accel_dec, 0.0, 1.0, conf->l_temp_motor_start, 25.0);
+	//const float temp_motor_accel_end = utils_map(conf->l_temp_accel_dec, 0.0, 1.0, conf->l_temp_motor_end, 25.0);
 
 	float lo_fet_temp_accel = 0.0;
 	if (motor->m_temp_fet < temp_fet_accel_start) {
@@ -1992,7 +1996,8 @@ static void update_override_limits(volatile motor_if_state_t *motor, volatile mc
 				temp_fet_accel_end, l_current_max_tmp, 0.0);
 	}
 
-	float lo_motor_temp_accel = 0.0;
+    // Motor temperature handling is done on the battery
+	/*float lo_motor_temp_accel = 0.0;
 	if (motor->m_temp_motor < temp_motor_accel_start) {
 		lo_motor_temp_accel = l_current_max_tmp;
 	} else if (motor->m_temp_motor > temp_motor_accel_end) {
@@ -2000,7 +2005,7 @@ static void update_override_limits(volatile motor_if_state_t *motor, volatile mc
 	} else {
 		lo_motor_temp_accel = utils_map(motor->m_temp_motor, temp_motor_accel_start,
 				temp_motor_accel_end, l_current_max_tmp, 0.0);
-	}
+	}*/
 
 	// RPM max
 	float lo_max_rpm = 0.0;
@@ -2026,12 +2031,22 @@ static void update_override_limits(volatile motor_if_state_t *motor, volatile mc
 		lo_min_rpm = utils_map(rpm_now, rpm_neg_cut_start, rpm_neg_cut_end, l_current_max_tmp, 0.0);
 	}
 
+    // Duty max (dynamic duty max limit calculation)
+    UTILS_LP_FAST(motor->aw_m_curr_filt, mc_interface_get_tot_current_filtered(), AW_DUTY_LIMITER_FILTER);
+    float mot_current = fabsf(motor->aw_m_curr_filt);
+    float l_duty_limiter_max_current = mc_interface_get_configuration()->l_current_max * AW_DUTY_LIMITER_MAX_CURRENT;
+
+    float l_duty_start_dynamic = conf->l_duty_start;
+    if (mot_current < l_duty_limiter_max_current) {
+        l_duty_start_dynamic = mot_current * (conf->l_duty_start - AW_DUTY_LIMITER_MIN) / l_duty_limiter_max_current + AW_DUTY_LIMITER_MIN;
+    }
+
 	// Duty max
 	float lo_max_duty = 0.0;
-	if (duty_now_abs < conf->l_duty_start) {
+	if (duty_now_abs < l_duty_start_dynamic) {
 		lo_max_duty = l_current_max_tmp;
 	} else {
-		lo_max_duty = utils_map(duty_now_abs, conf->l_duty_start, conf->l_max_duty, l_current_max_tmp, 0.0);
+		lo_max_duty = utils_map(duty_now_abs, l_duty_start_dynamic, conf->l_max_duty, l_current_max_tmp, 0.0);
 	}
 
 	float lo_max = utils_min_abs(lo_max_mos, lo_max_mot);
@@ -2040,7 +2055,7 @@ static void update_override_limits(volatile motor_if_state_t *motor, volatile mc
 	lo_max = utils_min_abs(lo_max, lo_max_rpm);
 	lo_max = utils_min_abs(lo_max, lo_min_rpm);
 	lo_max = utils_min_abs(lo_max, lo_fet_temp_accel);
-	lo_max = utils_min_abs(lo_max, lo_motor_temp_accel);
+	//lo_max = utils_min_abs(lo_max, lo_motor_temp_accel);
 	lo_max = utils_min_abs(lo_max, lo_max_duty);
 
 	if (lo_max < conf->cc_min_current) {

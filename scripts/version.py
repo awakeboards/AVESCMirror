@@ -22,5 +22,3 @@ def get_branch_commit_num():
     print('Failed to find current commit')
     return -1
 
-
-print(get_branch_commit_num())

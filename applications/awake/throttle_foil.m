@@ -21,7 +21,7 @@ thr_curve3(thr_curve3>1) = 1;
 thr_curve3(thr_curve3<0) = 0;
 
 pointsx = [1,10,15,30,40,50,60,70,80,85,90,100,110];
-pointsy = [0,0.1,0.15,0.26,0.32,0.38,0.42,0.51,0.62,0.78,0.87,1,1.25] .* 0.42;
+pointsy = [0,0.1,0.15,0.26,0.32,0.38,0.42,0.51,0.62,0.78,0.87,1,1.25] .* 0.24;
 thr_curve4 = polyval(polyfit(pointsx, pointsy, 6), thr_input);
 thr_curve4(thr_curve4>1) = 1;
 thr_curve4(thr_curve4<0) = 0;
@@ -46,8 +46,8 @@ legend('Extreme', 'Sport', 'Eco', 'Kids')
 
 clc;
 fprintf("\n");
-fprintf("static const float aw_curve_foil_extreme[] = {%s};\n", regexprep(num2str(thr_curve),'\s+',','));
-fprintf("static const float aw_curve_foil_sport[] = {%s};\n", regexprep(num2str(thr_curve2),'\s+',','));
-fprintf("static const float aw_curve_foil_eco[] = {%s};\n", regexprep(num2str(thr_curve3),'\s+',','));
-fprintf("static const float aw_curve_foil_kids[] = {%s};\n", regexprep(num2str(thr_curve4),'\s+',','));
+fprintf("static const float aw_curve_vinga_extreme[] = {%s};\n", regexprep(num2str(thr_curve),'\s+',','));
+fprintf("static const float aw_curve_vinga_sport[] = {%s};\n", regexprep(num2str(thr_curve2),'\s+',','));
+fprintf("static const float aw_curve_vinga_eco[] = {%s};\n", regexprep(num2str(thr_curve3),'\s+',','));
+fprintf("static const float aw_curve_vinga_kids[] = {%s};\n", regexprep(num2str(thr_curve4),'\s+',','));
 fprintf("\n");

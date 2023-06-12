@@ -1,36 +1,9 @@
-#ifndef MCCONF_DEFAULT_H_
-#define MCCONF_DEFAULT_H_
+// Awake parameters
+#define AW_DUTY_LIMITER_MIN 0.20 // min. duty cycle limit we apply
+#define AW_DUTY_LIMITER_MAX_CURRENT 0.20 // % of max motor L current where dynamic duty cycle limiter stop operating
+#define AW_DUTY_LIMITER_FILTER 0.7 // smaller value allows for smaller max current and still keeps motor running smoothly, but also delays the response of the filter at startup
 
-// Awake settings
-#define ERPM_DIVIDER 5
-
-// Default settings
-#ifndef MCCONF_DEFAULT_MOTOR_TYPE
-#define MCCONF_DEFAULT_MOTOR_TYPE		2
-#endif
-#ifndef MCCONF_PWM_MODE
-#define MCCONF_PWM_MODE					1 // Default PWM mode
-#endif
-#ifndef MCCONF_SENSOR_MODE
-#define MCCONF_SENSOR_MODE				0 // Sensor mode
-#endif
-#ifndef MCCONF_COMM_MODE
-#define MCCONF_COMM_MODE				0	// The commutation mode to use
-#endif
-
-// Limits
-#ifndef MCCONF_L_CURRENT_MAX
-#define MCCONF_L_CURRENT_MAX			200.0	// Current limit in Amperes (Upper)
-#endif
-#ifndef MCCONF_L_CURRENT_MIN
-#define MCCONF_L_CURRENT_MIN			-10.0	// Current limit in Amperes (Lower)
-#endif
-#ifndef MCCONF_L_IN_CURRENT_MAX
-#define MCCONF_L_IN_CURRENT_MAX			120.0	// Input current limit in Amperes (Upper)
-#endif
-#ifndef MCCONF_L_IN_CURRENT_MIN
-#define MCCONF_L_IN_CURRENT_MIN			-0.0	// Input current limit in Amperes (Lower)
-#endif
+// Shared limits
 #ifndef MCCONF_L_MAX_ABS_CURRENT
 #define MCCONF_L_MAX_ABS_CURRENT		350.0	// The maximum absolute current above which a fault is generated
 #endif
@@ -101,46 +74,6 @@
 #define MCCONF_L_DUTY_START				1.0 // Start limiting current at this duty cycle
 #endif
 
-// Speed PID parameters
-#ifndef MCCONF_S_PID_KP
-#define MCCONF_S_PID_KP					0.0003	// Proportional gain
-#endif
-#ifndef MCCONF_S_PID_KI
-#define MCCONF_S_PID_KI					0.0005	// Integral gain
-#endif
-#ifndef MCCONF_S_PID_KD
-#define MCCONF_S_PID_KD					1e-5	// Derivative gain
-#endif
-#ifndef MCCONF_S_PID_KD_FILTER
-#define MCCONF_S_PID_KD_FILTER			0.1	// Derivative filter
-#endif
-#ifndef MCCONF_S_PID_MIN_RPM
-#define MCCONF_S_PID_MIN_RPM			1200.0	// Minimum allowed RPM
-#endif
-#ifndef MCCONF_S_PID_ALLOW_BRAKING
-#define MCCONF_S_PID_ALLOW_BRAKING		1	// Allow braking in speed control mode
-#endif
-#ifndef MCCONF_S_PID_RAMP_ERPMS_S
-#define MCCONF_S_PID_RAMP_ERPMS_S		30000	// Default Speed Input Ramp
-#endif
-
-// Position PID parameters
-#ifndef MCCONF_P_PID_KP
-#define MCCONF_P_PID_KP					0.03	// Proportional gain
-#endif
-#ifndef MCCONF_P_PID_KI
-#define MCCONF_P_PID_KI					0.0		// Integral gain
-#endif
-#ifndef MCCONF_P_PID_KD
-#define MCCONF_P_PID_KD					0.0004	// Derivative gain
-#endif
-#ifndef MCCONF_P_PID_KD_FILTER
-#define MCCONF_P_PID_KD_FILTER			0.2		// Derivative filter
-#endif
-#ifndef MCCONF_P_PID_ANG_DIV
-#define MCCONF_P_PID_ANG_DIV			1.0		// Divide angle by this value
-#endif
-
 // Current control parameters
 #ifndef MCCONF_CC_GAIN
 #define MCCONF_CC_GAIN					0.0046	// Current controller error gain
@@ -155,65 +88,7 @@
 #define MCCONF_CC_RAMP_STEP				0.04	// Maximum duty cycle ramping step in CC mode
 #endif
 
-// BLDC
-#ifndef MCCONF_SL_MIN_RPM
-#define MCCONF_SL_MIN_RPM				150		// Auto-commutate below this RPM
-#endif
-#ifndef MCCONF_SL_MIN_ERPM_CYCLE_INT_LIMIT
-#define MCCONF_SL_MIN_ERPM_CYCLE_INT_LIMIT	1100.0	// Minimum RPM to calculate the BEMF coupling from
-#endif
-#ifndef MCCONF_SL_CYCLE_INT_LIMIT
-#define MCCONF_SL_CYCLE_INT_LIMIT		62.0	// Flux integrator limit 0 ERPM
-#endif
-#ifndef MCCONF_SL_BEMF_COUPLING_K
-#define MCCONF_SL_BEMF_COUPLING_K		600.0	// Input voltage to bemf coupling constant
-#endif
-#ifndef MCCONF_SL_PHASE_ADVANCE_AT_BR
-#define MCCONF_SL_PHASE_ADVANCE_AT_BR	0.8		// Flux integrator limit percentage at MCPWM_CYCLE_INT_START_RPM_BR ERPM
-#endif
-#ifndef MCCONF_SL_CYCLE_INT_BR
-#define MCCONF_SL_CYCLE_INT_BR			80000.0	// RPM border between the START and LOW interval
-#endif
-#ifndef MCCONF_SL_MAX_FB_CURR_DIR_CHANGE
-#define MCCONF_SL_MAX_FB_CURR_DIR_CHANGE	10.0	// Maximum current during full brake during which a direction change is allowed
-#endif
-
-// BLDC hall sensor table
-#ifndef MCCONF_HALL_TAB_0
-#define MCCONF_HALL_TAB_0				-1
-#endif
-#ifndef MCCONF_HALL_TAB_1
-#define MCCONF_HALL_TAB_1				1
-#endif
-#ifndef MCCONF_HALL_TAB_2
-#define MCCONF_HALL_TAB_2				3
-#endif
-#ifndef MCCONF_HALL_TAB_3
-#define MCCONF_HALL_TAB_3				2
-#endif
-#ifndef MCCONF_HALL_TAB_4
-#define MCCONF_HALL_TAB_4				5
-#endif
-#ifndef MCCONF_HALL_TAB_5
-#define MCCONF_HALL_TAB_5				6
-#endif
-#ifndef MCCONF_HALL_TAB_6
-#define MCCONF_HALL_TAB_6				4
-#endif
-#ifndef MCCONF_HALL_TAB_7
-#define MCCONF_HALL_TAB_7				-1
-#endif
-#ifndef MCCONF_HALL_ERPM
-#define MCCONF_HALL_ERPM				2000.0	// ERPM above which sensorless commutation is used in hybrid mode
-#endif
-
-// FOC
-#ifndef MCCONF_FOC_CURRENT_KP
-#define MCCONF_FOC_CURRENT_KP			0.0166
-#endif
-#ifndef MCCONF_FOC_CURRENT_KI
-#define MCCONF_FOC_CURRENT_KI			31.76
-#endif
+// FOC shared
 #ifndef MCCONF_FOC_F_SW
 #define MCCONF_FOC_F_SW					20000.0
 #endif
@@ -238,21 +113,7 @@
 #ifndef MCCONF_FOC_PLL_KI
 #define MCCONF_FOC_PLL_KI				30000.0
 #endif
-#ifndef MCCONF_FOC_MOTOR_L
-#define MCCONF_FOC_MOTOR_L				1.3312e-05
-#endif
-#ifndef MCCONF_FOC_MOTOR_R
-#define MCCONF_FOC_MOTOR_R				0.0130
-#endif
-#ifndef MCCONF_FOC_MOTOR_FLUX_LINKAGE
-#define MCCONF_FOC_MOTOR_FLUX_LINKAGE	0.014768
-#endif
-#ifndef MCCONF_FOC_MOTOR_LD_LQ_DIFF
-#define MCCONF_FOC_MOTOR_LD_LQ_DIFF		0.0
-#endif
-#ifndef MCCONF_FOC_OBSERVER_GAIN
-#define MCCONF_FOC_OBSERVER_GAIN		4.45e6		// Can be something like 600 / L
-#endif
+
 #ifndef MCCONF_FOC_OBSERVER_GAIN_SLOW
 #define MCCONF_FOC_OBSERVER_GAIN_SLOW	0.05	// Observer gain scale at minimum duty cycle
 #endif
@@ -444,24 +305,18 @@
 #define MCCONF_M_HALL_EXTRA_SAMPLES		1 // Extra samples for filtering when reading hall sensors
 #endif
 
-// Setup Info
-#ifndef MCCONF_SI_MOTOR_POLES
-#define MCCONF_SI_MOTOR_POLES			10 // Motor pole count
+// Default settings
+#ifndef MCCONF_DEFAULT_MOTOR_TYPE
+#define MCCONF_DEFAULT_MOTOR_TYPE		2
 #endif
-#ifndef MCCONF_SI_GEAR_RATIO
-#define MCCONF_SI_GEAR_RATIO			1 // Gear ratio
+#ifndef MCCONF_PWM_MODE
+#define MCCONF_PWM_MODE					1 // Default PWM mode
 #endif
-#ifndef MCCONF_SI_WHEEL_DIAMETER
-#define MCCONF_SI_WHEEL_DIAMETER		0.083 // Wheel Diameter
+#ifndef MCCONF_SENSOR_MODE
+#define MCCONF_SENSOR_MODE				0 // Sensor mode
 #endif
-#ifndef MCCONF_SI_BATTERY_TYPE
-#define MCCONF_SI_BATTERY_TYPE			BATTERY_TYPE_LIION_3_0__4_2 // Battery Type
-#endif
-#ifndef MCCONF_SI_BATTERY_CELLS
-#define MCCONF_SI_BATTERY_CELLS			22 // Battery Cells
-#endif
-#ifndef MCCONF_SI_BATTERY_AH
-#define MCCONF_SI_BATTERY_AH			24.0 // Battery amp hours
+#ifndef MCCONF_COMM_MODE
+#define MCCONF_COMM_MODE				0	// The commutation mode to use
 #endif
 
 // BMS
@@ -481,18 +336,114 @@
 #define MCCONF_BMS_SOC_LIMIT_END		0
 #endif
 
-// Field weakening custom (keep . so all numbers here are floating!)
-#ifndef AWCONF_FW_CURRENT_MAX
-#define AWCONF_FW_CURRENT_MAX		    50.0 // Maximum field weakening current
+// Setup Info - UNUSED
+#ifndef MCCONF_SI_MOTOR_POLES
+#define MCCONF_SI_MOTOR_POLES			10 // Motor pole count
 #endif
-#ifndef AWCONF_FW_DUTY_START
-#define AWCONF_FW_DUTY_START            0.95 // Start field weakening at this fraction of max duty cycle
+#ifndef MCCONF_SI_GEAR_RATIO
+#define MCCONF_SI_GEAR_RATIO			1 // Gear ratio
 #endif
-#ifndef AWCONF_FW_RAMP_TIME
-#define AWCONF_FW_RAMP_TIME             10.0 // Ramp time for field weakening current in seconds
+#ifndef MCCONF_SI_WHEEL_DIAMETER
+#define MCCONF_SI_WHEEL_DIAMETER		0.083 // Wheel Diameter
 #endif
-#ifndef AWCONF_FW_Q_CURRENT_FACTOR
-#define AWCONF_FW_Q_CURRENT_FACTOR	    0.07 // Factor of the FW-current to feed to the Q-axis to slow motor down when setting 0 current
+#ifndef MCCONF_SI_BATTERY_TYPE
+#define MCCONF_SI_BATTERY_TYPE			BATTERY_TYPE_LIION_3_0__4_2 // Battery Type
+#endif
+#ifndef MCCONF_SI_BATTERY_CELLS
+#define MCCONF_SI_BATTERY_CELLS			22 // Battery Cells
+#endif
+#ifndef MCCONF_SI_BATTERY_AH
+#define MCCONF_SI_BATTERY_AH			24.0 // Battery amp hours
 #endif
 
-#endif /* MCCONF_DEFAULT_H_ */
+// Speed PID parameters
+#ifndef MCCONF_S_PID_KP
+#define MCCONF_S_PID_KP					0.0003	// Proportional gain
+#endif
+#ifndef MCCONF_S_PID_KI
+#define MCCONF_S_PID_KI					0.0005	// Integral gain
+#endif
+#ifndef MCCONF_S_PID_KD
+#define MCCONF_S_PID_KD					1e-5	// Derivative gain
+#endif
+#ifndef MCCONF_S_PID_KD_FILTER
+#define MCCONF_S_PID_KD_FILTER			0.1	// Derivative filter
+#endif
+#ifndef MCCONF_S_PID_MIN_RPM
+#define MCCONF_S_PID_MIN_RPM			1200.0	// Minimum allowed RPM
+#endif
+#ifndef MCCONF_S_PID_ALLOW_BRAKING
+#define MCCONF_S_PID_ALLOW_BRAKING		1	// Allow braking in speed control mode
+#endif
+#ifndef MCCONF_S_PID_RAMP_ERPMS_S
+#define MCCONF_S_PID_RAMP_ERPMS_S		30000	// Default Speed Input Ramp
+#endif
+
+// Position PID parameters
+#ifndef MCCONF_P_PID_KP
+#define MCCONF_P_PID_KP					0.03	// Proportional gain
+#endif
+#ifndef MCCONF_P_PID_KI
+#define MCCONF_P_PID_KI					0.0		// Integral gain
+#endif
+#ifndef MCCONF_P_PID_KD
+#define MCCONF_P_PID_KD					0.0004	// Derivative gain
+#endif
+#ifndef MCCONF_P_PID_KD_FILTER
+#define MCCONF_P_PID_KD_FILTER			0.2		// Derivative filter
+#endif
+#ifndef MCCONF_P_PID_ANG_DIV
+#define MCCONF_P_PID_ANG_DIV			1.0		// Divide angle by this value
+#endif
+
+// BLDC
+#ifndef MCCONF_SL_MIN_RPM
+#define MCCONF_SL_MIN_RPM				150		// Auto-commutate below this RPM
+#endif
+#ifndef MCCONF_SL_MIN_ERPM_CYCLE_INT_LIMIT
+#define MCCONF_SL_MIN_ERPM_CYCLE_INT_LIMIT	1100.0	// Minimum RPM to calculate the BEMF coupling from
+#endif
+#ifndef MCCONF_SL_CYCLE_INT_LIMIT
+#define MCCONF_SL_CYCLE_INT_LIMIT		62.0	// Flux integrator limit 0 ERPM
+#endif
+#ifndef MCCONF_SL_BEMF_COUPLING_K
+#define MCCONF_SL_BEMF_COUPLING_K		600.0	// Input voltage to bemf coupling constant
+#endif
+#ifndef MCCONF_SL_PHASE_ADVANCE_AT_BR
+#define MCCONF_SL_PHASE_ADVANCE_AT_BR	0.8		// Flux integrator limit percentage at MCPWM_CYCLE_INT_START_RPM_BR ERPM
+#endif
+#ifndef MCCONF_SL_CYCLE_INT_BR
+#define MCCONF_SL_CYCLE_INT_BR			80000.0	// RPM border between the START and LOW interval
+#endif
+#ifndef MCCONF_SL_MAX_FB_CURR_DIR_CHANGE
+#define MCCONF_SL_MAX_FB_CURR_DIR_CHANGE	10.0	// Maximum current during full brake during which a direction change is allowed
+#endif
+
+// BLDC hall sensor table
+#ifndef MCCONF_HALL_TAB_0
+#define MCCONF_HALL_TAB_0				-1
+#endif
+#ifndef MCCONF_HALL_TAB_1
+#define MCCONF_HALL_TAB_1				1
+#endif
+#ifndef MCCONF_HALL_TAB_2
+#define MCCONF_HALL_TAB_2				3
+#endif
+#ifndef MCCONF_HALL_TAB_3
+#define MCCONF_HALL_TAB_3				2
+#endif
+#ifndef MCCONF_HALL_TAB_4
+#define MCCONF_HALL_TAB_4				5
+#endif
+#ifndef MCCONF_HALL_TAB_5
+#define MCCONF_HALL_TAB_5				6
+#endif
+#ifndef MCCONF_HALL_TAB_6
+#define MCCONF_HALL_TAB_6				4
+#endif
+#ifndef MCCONF_HALL_TAB_7
+#define MCCONF_HALL_TAB_7				-1
+#endif
+#ifndef MCCONF_HALL_ERPM
+#define MCCONF_HALL_ERPM				2000.0	// ERPM above which sensorless commutation is used in hybrid mode
+#endif

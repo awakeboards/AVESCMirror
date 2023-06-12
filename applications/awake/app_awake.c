@@ -17,6 +17,7 @@ static void tb_send_id(void);
 static void tb_send_mbs_type(void);
 static void tb_handle_faults(void);
 static bool tb_can_sid_callback(uint32_t id, uint8_t *data_in, uint8_t len);
+static bool tb_can_eid_callback(uint32_t eid, uint8_t *data_in, uint8_t len);
 
 // Global variables for testing system
 volatile bool aw_tst_enable = false;
@@ -29,6 +30,7 @@ void app_custom_start(void) {
 
     // init can communication
 	comm_can_set_sid_rx_callback(tb_can_sid_callback);
+	comm_can_set_eid_rx_callback(tb_can_eid_callback);
 
 	stop_now = false;
 	chThdCreateStatic(aw_thread_wa, sizeof(aw_thread_wa), NORMALPRIO, aw_thread,
@@ -60,6 +62,11 @@ static THD_FUNCTION(aw_thread, arg) {
 			is_running = false;
 			break;
 		}
+
+        // Check if HW is supported
+        if(!aw_is_hw_supported()) {
+            mc_interface_fault_stop(FAULT_CODE_OVER_TEMP_MOTOR, false, false); // FAULT_CODE_OVER_TEMP_MOTOR can't be reported, so we re-use this fault for AVESC_HW
+        }
 
         indication = AW_LED_ON;
 
@@ -126,12 +133,38 @@ static bool tb_can_sid_callback(uint32_t id, uint8_t *data_in, uint8_t len) {
     case AW_CAN_TB_AVESC_VERSION:
         {
             uint16_t version = VTYPE;
-            comm_can_transmit_sid(AW_CAN_TB_AVESC_VERSION, (uint8_t*) &version, 2);
+            uint16_t features = AW_FEATURE_DIRECT_CURRENT_CONTROL;
+
+            uint8_t buff[4] = {0};
+
+            memcpy(buff, &version, 2);
+            memcpy(buff + 2, &features, 2);
+
+            comm_can_transmit_sid(AW_CAN_TB_AVESC_VERSION, buff, 4);
         }
         return true;
 	default:
 		return false;
 	}
+}
+
+static bool tb_can_eid_callback(uint32_t eid, uint8_t *data_in, uint8_t len) { // NOLINT(readability-non-const-parameter)
+    (void) len;
+    (void) data_in;
+
+    uint8_t id = eid & 0xFF;
+    CAN_PACKET_ID cmd = eid >> 8;
+
+    // EXT packet is addressed at this VESC
+    if (id == 255 || id == app_get_configuration()->controller_id) {
+        // if current, rpm or duty command is received, we consider it a throttle frame too
+        // allowing alt mode where instead of AW_CAN_TB_THROTTLE_FRAME, direct current, duty or rpm control is possible
+        if (cmd == CAN_PACKET_SET_CURRENT || cmd == CAN_PACKET_SET_RPM || cmd == CAN_PACKET_SET_DUTY) {
+            tb_last_throttle_frame = chVTGetSystemTimeX();
+        }
+    }
+
+    return false; // mark all packets as not processed, we "spectate" EXT packets only, not process them
 }
 
 static void tb_send_state(void) {

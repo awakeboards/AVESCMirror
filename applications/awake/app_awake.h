@@ -22,4 +22,9 @@ typedef enum {
     AW_LED_ON = 2
 } aw_led_indication;
 
+typedef enum {
+    AW_FEATURE_BASE = 0,
+    AW_FEATURE_DIRECT_CURRENT_CONTROL = 1 << 0,
+} aw_avesc_features;
+
 #endif

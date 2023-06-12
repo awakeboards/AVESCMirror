@@ -28,6 +28,13 @@
 
 #include "datatypes.h"
 
+#define _STRINGIZE(x) #x
+#define STRINGIZE(x) _STRINGIZE(x)
+
+#define HW_NAME	STRINGIZE(AW_PCB_NAME)"_"STRINGIZE(VTYPE)"_"STRINGIZE(AW_MOTOR_NAME)"_"STRINGIZE(AW_SHUNT_NAME)
+
+#define DEV 0
+
 // Settings and parameters to override
 //#define VIN_R1						33000.0
 //#define VIN_R1						39200.0
@@ -49,8 +56,8 @@
  */
 #if !defined(HW_SOURCE) && !defined(HW_HEADER)
 
-#define HW_SOURCE "hw_avesc_22.c"
-#define HW_HEADER "hw_avesc_22.h"
+#define HW_SOURCE STRINGIZE(AW_HW_SOURCE)
+#define HW_HEADER STRINGIZE(AW_HW_HEADER)
 
 #endif
 
@@ -74,18 +81,10 @@
 
 #include "hw.h"
 
-#ifdef FOIL
-#include "mcconf_default_foil.h"
-#endif
+#define MCCONF_INCLUDE STRINGIZE(AW_MCCONF_FILE)
 
-#ifdef AMOTOR
-#include "mcconf_default_amotor.h"
-#endif
-
-#ifdef ASTRO
-#include "mcconf_default_astro.h"
-#endif
-
+#include "_mcconf.h"
+#include MCCONF_INCLUDE
 
 #include "appconf_default.h"
 

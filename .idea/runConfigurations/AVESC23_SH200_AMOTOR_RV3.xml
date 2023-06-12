@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="AMOTOR S200" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile">
-    <makefile filename="$PROJECT_DIR$/../AVESC\Makefile" target="all" workingDirectory="$PROJECT_DIR$" arguments="STYPE=SHUNT200 MTYPE=AMOTOR BTYPE=RV3">
+  <configuration default="false" name="AVESC23 SH200 AMOTOR RV3" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile">
+    <makefile filename="$PROJECT_DIR$/../AVESC\Makefile" target="all" workingDirectory="$PROJECT_DIR$" arguments="PTYPE=AVESC23 STYPE=SH200 MTYPE=AMOTOR BTYPE=RV3">
       <envs />
     </makefile>
     <method v="2">
