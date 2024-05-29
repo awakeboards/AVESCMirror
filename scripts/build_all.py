@@ -9,20 +9,22 @@ production = True
 if production:
     pcb_versions = ["AVESC23"]
     motor_types = ["AMOTOR", "ASTRO", "VINGA"]
-    board_types = ["RV1", "RV3", "RVS", "VINGA"]
+    board_types = ["RV1", "RV3", "RVS", "VINGA", "RVBRABUS"]
     shunt_types = ["SH100", "SH200"]
 else:
     pcb_versions = ["AVESC23"]  # ["AVESC23", "AVESC25"]
-    motor_types = ["RAVIK1C"]  # ["AMOTOR", "ASTRO", "VINGA", "RAVIK1C", ...]
-    board_types = ["RV3"]  # ["RV1", "RV3", "RVS", "VINGA"]
-    shunt_types = ["SH100"]  # ["SH100", "SH200"]
+    motor_types = ["D85L190"]  # ["AMOTOR", "ASTRO", "VINGA", ...]
+    board_types = ["GOAT"]  # ["RV1", "RV3", "RVS", "VINGA", "GOAT"]
+    shunt_types = ["SH100", "SH200"]  # ["SH100", "SH200"]
 
 # Define invalid combinations
 exclusions = [
     r'.*?_\d{4}_RV1_(?!(ASTRO))',
-    r'.*?_\d{4}_RV3_(?!(AMOTOR|RAVIK1C))',
-    r'.*?_\d{4}_RVS_(?!(AMOTOR|ASTRO|RAVIK1C))',
-    r'.*?_\d{4}_VINGA_(?!(VINGA|VINGA1C))',
+    r'.*?_\d{4}_RV3_(?!(AMOTOR))',
+    r'.*?_\d{4}_RVS_(?!(AMOTOR|ASTRO))',
+    r'.*?_\d{4}_GOAT_(?!(D85L190))',
+    r'.*?_\d{4}_RVBRABUS_(?!(AMOTOR))',
+    r'.*?_\d{4}_VINGA_(?!(VINGA))',
 ]
 
 fw_version = str(get_branch_commit_num())

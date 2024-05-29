@@ -117,7 +117,11 @@ static bool tb_can_sid_callback(uint32_t id, uint8_t *data_in, uint8_t len) {
 
 	switch (id) {
 	case AW_CAN_TB_THROTTLE_FRAME:
-		aw_handle_throttle(data_in[0], data_in[1]);
+        if (len == 3 && data_in[2] == true) {
+            aw_handle_throttle(data_in[0], AW_PM_BRABUS);
+        } else {
+            aw_handle_throttle(data_in[0], data_in[1]);
+        }
         tb_last_throttle_frame = chVTGetSystemTimeX();
 		return true;
 	case AW_CAN_TB_BOARD_ID:
@@ -127,13 +131,27 @@ static bool tb_can_sid_callback(uint32_t id, uint8_t *data_in, uint8_t len) {
         // only configure the ones that can be changed
         //((app_configuration*) app_get_configuration())->app_awake.motor_type = data_in[0]; // not configurable
         ((app_configuration*) app_get_configuration())->app_awake.board_type = data_in[1];
-        //((app_configuration*) app_get_configuration())->app_awake.shunt_type = data_in[2];
+        //((app_configuration*) app_get_configuration())->app_awake.shunt_type = data_in[2];  // not configurable
+        if (len > 3) // for backwards compatibility we need to check length
+            ((app_configuration*) app_get_configuration())->app_awake.locked = data_in[3];
         conf_general_store_app_configuration((app_configuration*) app_get_configuration());
+        return true;
+    case AW_CAN_TB_LOCK_CONTROL:
+        if (len == 1) {
+            ((app_configuration*) app_get_configuration())->app_awake.locked = data_in[0];
+            conf_general_store_app_configuration((app_configuration*) app_get_configuration());
+        } else if (len == 0) {
+            uint8_t locked = ((app_configuration*) app_get_configuration())->app_awake.locked;
+            comm_can_transmit_sid(AW_CAN_TB_LOCK_CONTROL, &locked, 1);
+        }
         return true;
     case AW_CAN_TB_AVESC_VERSION:
         {
             uint16_t version = VTYPE;
-            uint16_t features = AW_FEATURE_DIRECT_CURRENT_CONTROL;
+
+            uint16_t features = AW_FEATURE_BASE;
+            features |= AW_FEATURE_DIRECT_CURRENT_CONTROL;
+            features |= AW_FEATURE_SET_CURRENT_LIMITS;
 
             uint8_t buff[4] = {0};
 
@@ -141,6 +159,15 @@ static bool tb_can_sid_callback(uint32_t id, uint8_t *data_in, uint8_t len) {
             memcpy(buff + 2, &features, 2);
 
             comm_can_transmit_sid(AW_CAN_TB_AVESC_VERSION, buff, 4);
+        }
+        return true;
+    case AW_CAN_AVESC_SET_CURRENT_LIMITS:
+        {
+            int32_t ind = 0;
+            float max_motor_current = (float) buffer_get_uint16(data_in, &ind) / 10.0f;
+            float max_battery_current = (float) buffer_get_uint16(data_in, &ind) / 10.0f;
+            ((volatile mc_configuration*) mc_interface_get_configuration())->l_current_max = max_motor_current;
+            ((volatile mc_configuration*) mc_interface_get_configuration())->l_in_current_max = max_battery_current;
         }
         return true;
 	default:
@@ -204,8 +231,9 @@ static void tb_send_mbs_type(void) {
         app_get_configuration()->app_awake.motor_type,
         app_get_configuration()->app_awake.board_type,
         app_get_configuration()->app_awake.shunt_type,
+        app_get_configuration()->app_awake.locked,
     };
-	comm_can_transmit_sid(AW_CAN_TB_MBS_TYPE, data_out, 3);
+	comm_can_transmit_sid(AW_CAN_TB_MBS_TYPE, data_out, 4);
 }
 
 static void tb_handle_faults(void) {

@@ -1,11 +1,13 @@
 #include "aw_throttle.h"
 
 // Private variables
+static const float* aw_curve_brabus;
 static const float* aw_curve_extreme;
 static const float* aw_curve_sport;
 static const float* aw_curve_eco;
 static const float* aw_curve_kids;
 static float aw_min_active_current;
+static float aw_current_ramp_limit;
 
 // Private functions
 static void aw_set_current(float dt, float current);
@@ -14,25 +16,47 @@ static float aw_throttle_to_current(uint8_t throttle, uint8_t mode);
 
 void aw_init_throttle(void) {
     if (((app_configuration*) app_get_configuration())->app_awake.board_type == AW_BOARD_VINGA) {
+        aw_curve_brabus = aw_curve_vinga_extreme; // not used
         aw_curve_extreme = aw_curve_vinga_extreme;
         aw_curve_sport = aw_curve_vinga_sport;
         aw_curve_eco = aw_curve_vinga_eco;
         aw_curve_kids = aw_curve_vinga_kids; // slow mode
 
         aw_min_active_current = AW_VINGA_MIN_ACTIVE_CURRENT;
-    } else {
+        aw_current_ramp_limit = AW_CURRENT_RAMP_LIMIT;
+    } else if (((app_configuration*) app_get_configuration())->app_awake.board_type == AW_BOARD_GOAT) {
+        aw_curve_brabus = aw_curve_ravik_extreme; // not used
         aw_curve_extreme = aw_curve_ravik_extreme;
         aw_curve_sport = aw_curve_ravik_sport;
         aw_curve_eco = aw_curve_ravik_eco;
         aw_curve_kids = aw_curve_ravik_kids; // slow mode
 
         aw_min_active_current = AW_RAVIK_MIN_ACTIVE_CURRENT;
+        aw_current_ramp_limit = AW_CURRENT_RAMP_LIMIT_GOAT;
+    } else { // Ravik series boards
+        aw_curve_brabus = aw_curve_ravik_brabus; // only for RVBRABUS boards
+        aw_curve_extreme = aw_curve_ravik_extreme;
+        aw_curve_sport = aw_curve_ravik_sport;
+        aw_curve_eco = aw_curve_ravik_eco;
+        aw_curve_kids = aw_curve_ravik_kids; // slow mode
+
+        aw_min_active_current = AW_RAVIK_MIN_ACTIVE_CURRENT;
+        aw_current_ramp_limit = AW_CURRENT_RAMP_LIMIT;
     }
 }
 
 void aw_handle_throttle(uint8_t throttle, uint8_t mode) {
     static systime_t time_last = 0; // holds last time this function was called
     static systime_t time_zero_throttle = 0; // holds last time zero throttle was requested
+
+    if (((app_configuration*) app_get_configuration())->app_awake.locked) {
+        return; // CM is locked, we do not allow throttle control
+    }
+
+    if (mode == AW_PM_BRABUS
+        && ((app_configuration*) app_get_configuration())->app_awake.board_type != AW_BOARD_RVBRABUS) {
+        mode = AW_PM_EXTREME; // If BRABUS mode is requested on a non-Brabus board, set it to extreme mode
+    }
 
     float dt = ST2MS(chVTGetSystemTimeX() - time_last) / 1000.0;
 
@@ -53,10 +77,8 @@ static void aw_set_current(float dt, float current) {
 
     if (dt > 0) {
         float dcurrent = (current - current_old) / dt; // A/s
-        if (dcurrent > AW_CURRENT_RAMP_LIMIT) {
-            current = current_old + AW_CURRENT_RAMP_LIMIT * dt;
-        } else if (dcurrent < -AW_CURRENT_RAMP_LIMIT) {
-            current = current_old - AW_CURRENT_RAMP_LIMIT * dt;
+        if (dcurrent > aw_current_ramp_limit) {
+            current = current_old + aw_current_ramp_limit * dt;
         }
     }
 
@@ -85,9 +107,21 @@ static float aw_throttle_to_current(uint8_t throttle, uint8_t mode) {
     // throttle range safety check
     throttle = throttle > 99 ? 99 : throttle;
 
+    if (mode == AW_PM_BRABUS) { // boost current limits for Brabus mode
+        ((volatile mc_configuration*) mc_interface_get_configuration())->l_current_max =
+                MCCONF_L_CURRENT_MAX * AW_BRABUS_CURRENT_BOOST;
+        ((volatile mc_configuration*) mc_interface_get_configuration())->l_in_current_max =
+                MCCONF_L_IN_CURRENT_MAX * AW_BRABUS_CURRENT_IN_BOOST;
+    } else { // reset to default
+        ((volatile mc_configuration*) mc_interface_get_configuration())->l_current_max = MCCONF_L_CURRENT_MAX;
+        ((volatile mc_configuration*) mc_interface_get_configuration())->l_in_current_max = MCCONF_L_IN_CURRENT_MAX;
+    }
+
     // throttle curve data
     float i_p;
-    if (mode == AW_PM_EXTREME) {
+    if (mode == AW_PM_BRABUS) {
+        i_p = aw_curve_brabus[throttle];
+    } else if (mode == AW_PM_EXTREME) {
         i_p = aw_curve_extreme[throttle];
     } else if (mode == AW_PM_SPORT) {
         i_p = aw_curve_sport[throttle];

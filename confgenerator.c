@@ -955,4 +955,5 @@ void confgenerator_set_defaults_appconf(app_configuration *conf) {
     conf->app_awake.motor_type = AW_MOTOR;
     conf->app_awake.board_type = AW_BOARD;
     conf->app_awake.shunt_type = AW_SHUNT;
+    conf->app_awake.locked = false;
 }

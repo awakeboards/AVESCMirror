@@ -25,6 +25,7 @@ typedef enum {
 typedef enum {
     AW_FEATURE_BASE = 0,
     AW_FEATURE_DIRECT_CURRENT_CONTROL = 1 << 0,
+    AW_FEATURE_SET_CURRENT_LIMITS = 1 << 1,
 } aw_avesc_features;
 
 #endif

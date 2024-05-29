@@ -1,7 +1,9 @@
 #define NTC_TEMP_MOTOR(beta)	(((NTC_RES_MOTOR(ADC_Value[ADC_IND_TEMP_MOTOR]) / 1000.0) - 1.0) / 0.00385)
 
 // Awake settings
-#define ERPM_DIVIDER 4
+#define ERPM_DIVIDER 5
+
+#define MCCONF_M_INVERT_DIRECTION		true
 
 // Limits
 #define MCCONF_L_CURRENT_MAX			180.0	// Current limit in Amperes (Upper)

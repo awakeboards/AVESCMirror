@@ -271,9 +271,6 @@
 #ifndef MCCONF_M_SENSOR_PORT_MODE
 #define MCCONF_M_SENSOR_PORT_MODE		SENSOR_PORT_MODE_HALL // The mode of the hall_encoder port
 #endif
-#ifndef MCCONF_M_INVERT_DIRECTION
-#define MCCONF_M_INVERT_DIRECTION		true	 // Invert the motor direction
-#endif
 #ifndef MCCONF_M_DRV8301_OC_MODE
 #define MCCONF_M_DRV8301_OC_MODE		0 // DRV8301 over current protection mode
 #endif

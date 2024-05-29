@@ -20,19 +20,28 @@ for i=thr_input+1
 	thr_curve4(i) = thr_curve4(i)   *   0.21; % slow
 end
 
+pointsx = [1,10,15,30,40,50,60,70,80,85,90,100];
+pointsy = [0,0.15,0.21,0.27,0.36,0.44,0.49,0.52,0.54,0.74,0.89,1];
+thr_curve5 = polyval(polyfit(pointsx, pointsy, 5), thr_input);
+thr_curve5(thr_curve5>1) = 1;
+thr_curve5(thr_curve5<0) = 0;
+thr_curve5(100) = 1.0;
+
 figure(1)
 hold on;
 plot(thr_curve, 'x'); 
 plot(thr_curve2, 'x');
 plot(thr_curve3, 'x');
 plot(thr_curve4, 'x');
+plot((thr_curve5) .* 1.4, 'x');
 title('Thorttle curve')
 xlabel('Throttle [%]')
 ylabel('Current [% I_{max}]')
-legend('Extreme', 'Sport', 'Eco', 'Kids')
+legend('Extreme', 'Sport', 'Eco', 'Kids', 'Brabus')
 
 clc;
 fprintf("\n");
+fprintf("static const float aw_curve_ravik_brabus[] = {%s};\n", regexprep(num2str(thr_curve5),'\s+',','));
 fprintf("static const float aw_curve_ravik_extreme[] = {%s};\n", regexprep(num2str(thr_curve),'\s+',','));
 fprintf("static const float aw_curve_ravik_sport[] = {%s};\n", regexprep(num2str(thr_curve2),'\s+',','));
 fprintf("static const float aw_curve_ravik_eco[] = {%s};\n", regexprep(num2str(thr_curve3),'\s+',','));

@@ -3,6 +3,8 @@
 // Awake settings
 #define ERPM_DIVIDER 5
 
+#define MCCONF_M_INVERT_DIRECTION		true
+
 // Limits
 #define MCCONF_L_CURRENT_MAX			195.0	// Current limit in Amperes (Upper)
 #define MCCONF_L_CURRENT_MIN			-2.0	// Current limit in Amperes (Lower)
