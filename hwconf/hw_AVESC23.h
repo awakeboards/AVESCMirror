@@ -86,6 +86,8 @@
 #define CURRENT_SHUNT_RES		aw_hw_avesc_shunt_factor()
 #endif
 
+#define MCCONF_FOC_F_SW					20000.0
+
 #define HW_MAX_CURRENT_OFFSET				4096	// don't check for current offset
 #define MCCONF_MAX_CURRENT_UNBALANCE		100.0	// [Amp] More than this unbalance trips the fault likely a INA240 or motor damaged
 

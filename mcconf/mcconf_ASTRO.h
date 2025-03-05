@@ -1,7 +1,13 @@
-#define NTC_TEMP_MOTOR(beta)	(NTC_RES_MOTOR(ADC_Value[ADC_IND_TEMP_MOTOR])*NTC_RES_MOTOR(ADC_Value[ADC_IND_TEMP_MOTOR])*(-5.833711E-05) + NTC_RES_MOTOR(ADC_Value[ADC_IND_TEMP_MOTOR])*0.287332 - 1.284209E+02)
+#define NTC_TEMP_MOTOR(beta)	        (NTC_RES_MOTOR(ADC_Value[ADC_IND_TEMP_MOTOR])*NTC_RES_MOTOR(ADC_Value[ADC_IND_TEMP_MOTOR])*(-5.833711E-05) + NTC_RES_MOTOR(ADC_Value[ADC_IND_TEMP_MOTOR])*0.287332 - 1.284209E+02)
 
 // Awake settings
-#define ERPM_DIVIDER 5
+#define AW_ERPM_DIVIDER                 5
+#define AW_CURRENT_RAMP_LIMIT           1000    // A/s - the fastest overall change of current allowed
+
+// Duty limiter to prevent idle-run oscillation
+#define AW_DUTY_LIMITER_MIN             0.20 // min. duty cycle limit we apply
+#define AW_DUTY_LIMITER_MAX_CURRENT     0.20 // % of max motor L current where dynamic duty cycle limiter stop operating
+#define AW_DUTY_LIMITER_FILTER          0.7 // smaller value allows for smaller max current and still keeps motor running smoothly, but also delays the response of the filter at startup
 
 #define MCCONF_M_INVERT_DIRECTION		true
 

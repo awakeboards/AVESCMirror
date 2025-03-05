@@ -39,6 +39,8 @@
 #include "shutdown.h"
 #include "bms.h"
 
+#include "awake/app_awake.h"
+
 // Settings
 #define RX_FRAMES_SIZE	100
 #define RX_BUFFER_SIZE	PACKET_MAX_PL_LEN
@@ -1166,7 +1168,10 @@ static void decode_msg(uint32_t eid, uint8_t *data8, int len, bool is_replaced) 
 
 		case CAN_PACKET_SET_CURRENT:
 			ind = 0;
-			mc_interface_set_current(buffer_get_float32(data8, 1e3, &ind));
+            // Disabled direct call to mc_interface_set_current
+            // Use aw_set_current instead that indirectly calls mc_interface_set_current but with ramp applied
+			//mc_interface_set_current(buffer_get_float32(data8, 1e3, &ind));
+			aw_set_current(buffer_get_float32(data8, 1e3, &ind));
 			timeout_reset();
 			break;
 

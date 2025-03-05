@@ -22,9 +22,6 @@
 #define AW_STARTUP_TIMEOUT              5       // s - max time of startup before we consider the motor stuck
 #define AW_MIN_STABLE_RPM               2000    // eRPM - eRPM where the motor is considered started up
 
-#define AW_CURRENT_RAMP_LIMIT           1000    // A/s - the fastest overall change of current allowed
-#define AW_CURRENT_RAMP_LIMIT_GOAT      500    // A/s - the fastest overall change of current allowed
-
 #define AW_RAVIK_MIN_ACTIVE_CURRENT     5       // A - minimal current during a normal motor operation
 #define AW_VINGA_MIN_ACTIVE_CURRENT     10      // A - minimal current during a normal motor operation
 

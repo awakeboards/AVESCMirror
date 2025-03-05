@@ -50,6 +50,26 @@ void app_custom_configure(app_configuration *conf) {
     (void) conf;
 }
 
+void aw_set_current(float current) {
+	static systime_t time_last = 0; // Holds last time this function was called
+	static float current_old = 0;
+
+	float dt = ST2MS(chVTGetSystemTimeX() - time_last) / 1000.0;
+	if (dt > 0) {
+		float dcurrent = (current - current_old) / dt; // A/s
+
+		// Apply ramp limit only when increasing magnitude (moving away from zero)
+		if ((fabsf(current) > fabsf(current_old)) && (fabsf(dcurrent) > AW_CURRENT_RAMP_LIMIT)) {
+			current = current_old + copysignf(AW_CURRENT_RAMP_LIMIT, dcurrent) * dt;
+		}
+	}
+
+	mc_interface_set_current(current);
+
+	current_old = current;
+	time_last = chVTGetSystemTimeX();
+}
+
 static THD_FUNCTION(aw_thread, arg) {
 	(void) arg;
 
@@ -196,7 +216,7 @@ static bool tb_can_eid_callback(uint32_t eid, uint8_t *data_in, uint8_t len) { /
 
 static void tb_send_state(void) {
 	uint16_t MotorRPM = (uint16_t)(
-			mc_interface_get_rpm() / (float) ERPM_DIVIDER);
+			mc_interface_get_rpm() / (float) AW_ERPM_DIVIDER);
 	int16_t ESCTemperature = (int16_t) (mc_interface_temp_fet_filtered() * 1e1f);
 	int16_t MotorTemperature = (int16_t) (mc_interface_temp_motor_filtered() * 1e1f);
 

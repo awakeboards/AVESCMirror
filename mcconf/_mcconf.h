@@ -1,8 +1,3 @@
-// Awake parameters
-#define AW_DUTY_LIMITER_MIN 0.20 // min. duty cycle limit we apply
-#define AW_DUTY_LIMITER_MAX_CURRENT 0.20 // % of max motor L current where dynamic duty cycle limiter stop operating
-#define AW_DUTY_LIMITER_FILTER 0.7 // smaller value allows for smaller max current and still keeps motor running smoothly, but also delays the response of the filter at startup
-
 // Shared limits
 #ifndef MCCONF_L_MAX_ABS_CURRENT
 #define MCCONF_L_MAX_ABS_CURRENT		350.0	// The maximum absolute current above which a fault is generated
@@ -11,7 +6,7 @@
 #define MCCONF_L_MIN_VOLTAGE			60.0		// Minimum input voltage
 #endif
 #ifndef MCCONF_L_MAX_VOLTAGE
-#define MCCONF_L_MAX_VOLTAGE			95.0	// Maximum input voltage
+#define MCCONF_L_MAX_VOLTAGE			105.0	// Maximum input voltage
 #endif
 #ifndef MCCONF_L_BATTERY_CUT_START
 #define MCCONF_L_BATTERY_CUT_START		66.0	// Start limiting the positive current at this voltage

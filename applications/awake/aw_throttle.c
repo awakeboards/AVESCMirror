@@ -1,5 +1,7 @@
 #include "aw_throttle.h"
 
+#include "app_awake.h"
+
 // Private variables
 static const float* aw_curve_brabus;
 static const float* aw_curve_extreme;
@@ -7,10 +9,8 @@ static const float* aw_curve_sport;
 static const float* aw_curve_eco;
 static const float* aw_curve_kids;
 static float aw_min_active_current;
-static float aw_current_ramp_limit;
 
 // Private functions
-static void aw_set_current(float dt, float current);
 static float aw_startup_current_logic(systime_t time_zero_throttle);
 static float aw_throttle_to_current(uint8_t throttle, uint8_t mode);
 
@@ -23,16 +23,6 @@ void aw_init_throttle(void) {
         aw_curve_kids = aw_curve_vinga_kids; // slow mode
 
         aw_min_active_current = AW_VINGA_MIN_ACTIVE_CURRENT;
-        aw_current_ramp_limit = AW_CURRENT_RAMP_LIMIT;
-    } else if (((app_configuration*) app_get_configuration())->app_awake.board_type == AW_BOARD_GOAT) {
-        aw_curve_brabus = aw_curve_ravik_extreme; // not used
-        aw_curve_extreme = aw_curve_ravik_extreme;
-        aw_curve_sport = aw_curve_ravik_sport;
-        aw_curve_eco = aw_curve_ravik_eco;
-        aw_curve_kids = aw_curve_ravik_kids; // slow mode
-
-        aw_min_active_current = AW_RAVIK_MIN_ACTIVE_CURRENT;
-        aw_current_ramp_limit = AW_CURRENT_RAMP_LIMIT_GOAT;
     } else { // Ravik series boards
         aw_curve_brabus = aw_curve_ravik_brabus; // only for RVBRABUS boards
         aw_curve_extreme = aw_curve_ravik_extreme;
@@ -41,12 +31,10 @@ void aw_init_throttle(void) {
         aw_curve_kids = aw_curve_ravik_kids; // slow mode
 
         aw_min_active_current = AW_RAVIK_MIN_ACTIVE_CURRENT;
-        aw_current_ramp_limit = AW_CURRENT_RAMP_LIMIT;
     }
 }
 
 void aw_handle_throttle(uint8_t throttle, uint8_t mode) {
-    static systime_t time_last = 0; // holds last time this function was called
     static systime_t time_zero_throttle = 0; // holds last time zero throttle was requested
 
     if (((app_configuration*) app_get_configuration())->app_awake.locked) {
@@ -58,33 +46,14 @@ void aw_handle_throttle(uint8_t throttle, uint8_t mode) {
         mode = AW_PM_EXTREME; // If BRABUS mode is requested on a non-Brabus board, set it to extreme mode
     }
 
-    float dt = ST2MS(chVTGetSystemTimeX() - time_last) / 1000.0;
-
     if (throttle > 0 && fabsf(mcpwm_foc_get_rpm()) < AW_MIN_STABLE_RPM) { // startup logic
-        aw_set_current(dt, aw_startup_current_logic(time_zero_throttle));
+        aw_set_current(aw_startup_current_logic(time_zero_throttle));
     } else if (throttle > 0) { // normal operation logic
-        aw_set_current(dt, aw_throttle_to_current(throttle, mode));
+        aw_set_current(aw_throttle_to_current(throttle, mode));
     } else { // no throttle logic (throttle = 0)
-        aw_set_current(dt, 0);
+        aw_set_current(0);
         time_zero_throttle = chVTGetSystemTimeX();
     }
-
-    time_last = chVTGetSystemTimeX();
-}
-
-static void aw_set_current(float dt, float current) {
-    static float current_old = 0;
-
-    if (dt > 0) {
-        float dcurrent = (current - current_old) / dt; // A/s
-        if (dcurrent > aw_current_ramp_limit) {
-            current = current_old + aw_current_ramp_limit * dt;
-        }
-    }
-
-    mc_interface_set_current(current);
-
-    current_old = current;
 }
 
 static float aw_startup_current_logic(systime_t time_zero_throttle) {

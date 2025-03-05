@@ -10,7 +10,6 @@
 // HW properties
 #define HW_HAS_3_SHUNTS
 #define HW_HAS_PHASE_SHUNTS
-#define INVERTED_SHUNT_POLARITY
 
 // Macros
 #define LED_GREEN_GPIO			GPIOC
@@ -86,6 +85,8 @@
 #define CURRENT_SHUNT_RES		aw_hw_avesc_shunt_factor()
 #endif
 
+#define MCCONF_FOC_F_SW					30000.0
+
 #define HW_MAX_CURRENT_OFFSET				4096	// don't check for current offset
 #define MCCONF_MAX_CURRENT_UNBALANCE		100.0	// [Amp] More than this unbalance trips the fault likely a INA240 or motor damaged
 
@@ -119,7 +120,7 @@
 #define ADC_V_ZERO				(ADC_Value[ADC_IND_VIN_SENS] / 2)
 
 // Override dead time.
-#define HW_DEAD_TIME_NSEC		1000.0
+#define HW_DEAD_TIME_NSEC		300.0
 
 // Setting limits
 #define HW_LIM_CURRENT			-300.0, 300.0

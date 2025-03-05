@@ -83,8 +83,8 @@
 
 #define MCCONF_INCLUDE STRINGIZE(AW_MCCONF_FILE)
 
-#include "_mcconf.h"
 #include MCCONF_INCLUDE
+#include "_mcconf.h"
 
 #include "appconf_default.h"
 

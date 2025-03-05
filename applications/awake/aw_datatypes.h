@@ -2,12 +2,14 @@
 #define AVESC_AW_DATATYPES_H
 
 // Boards
-#define DEF_AW_BOARD_RV1        1
-#define DEF_AW_BOARD_RV3        2
-#define DEF_AW_BOARD_RVS        3
-#define DEF_AW_BOARD_VINGA      4
-#define DEF_AW_BOARD_GOAT       5
-#define DEF_AW_BOARD_RVBRABUS   6
+#define DEF_AW_BOARD_RV1            1
+#define DEF_AW_BOARD_RV3            2
+#define DEF_AW_BOARD_RVS            3
+#define DEF_AW_BOARD_VINGA          4
+#define DEF_AW_BOARD_RVEXPLORE      5 // beginner board
+#define DEF_AW_BOARD_RVBRABUS       6
+#define DEF_AW_BOARD_RVULTIMATE     7 // old S
+#define DEF_AW_BOARD_RVADVENTURE    8 // old 3
 
 typedef enum {
     AW_BOARD_RV = 0,
@@ -15,22 +17,24 @@ typedef enum {
     AW_BOARD_RV3 = DEF_AW_BOARD_RV3,
     AW_BOARD_RVS = DEF_AW_BOARD_RVS,
     AW_BOARD_VINGA = DEF_AW_BOARD_VINGA,
-    AW_BOARD_GOAT = DEF_AW_BOARD_GOAT,
+    AW_BOARD_RVEXPLORE = DEF_AW_BOARD_RVEXPLORE,
     AW_BOARD_RVBRABUS = DEF_AW_BOARD_RVBRABUS,
+    AW_BOARD_RVULTIMATE = DEF_AW_BOARD_RVULTIMATE,
+    AW_BOARD_RVADVENTURE = DEF_AW_BOARD_RVADVENTURE,
 } aw_board_type;
 
 // Motors
 #define DEF_AW_MOTOR_ASTRO              1
 #define DEF_AW_MOTOR_AMOTOR             2
 #define DEF_AW_MOTOR_VINGA              3
-#define DEF_AW_MOTOR_D85L190            4
+#define DEF_AW_MOTOR_GOAT           4
 
 typedef enum {
     AW_MOTOR_UNKNOWN = 0,
     AW_MOTOR_ASTRO = DEF_AW_MOTOR_ASTRO,
     AW_MOTOR_AMOTOR = DEF_AW_MOTOR_AMOTOR,
     AW_MOTOR_VINGA = DEF_AW_MOTOR_VINGA,
-    AW_MOTOR_D85L190 = DEF_AW_MOTOR_D85L190
+    AW_MOTOR_GOAT = DEF_AW_MOTOR_GOAT
 } aw_motor_type;
 
 // Shunts

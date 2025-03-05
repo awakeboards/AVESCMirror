@@ -28,4 +28,6 @@ typedef enum {
     AW_FEATURE_SET_CURRENT_LIMITS = 1 << 1,
 } aw_avesc_features;
 
+void aw_set_current(float current);
+
 #endif
