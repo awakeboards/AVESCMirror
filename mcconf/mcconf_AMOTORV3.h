@@ -21,9 +21,9 @@
     #define MCCONF_L_IN_CURRENT_MAX			120.00	// Input current limit in Amperes (Upper)
     #define MCCONF_L_IN_CURRENT_MIN			-20.0	// Input current limit in Amperes (Lower)
 #else // DEF_AW_BOARD_RVULTIMATE
-    #define MCCONF_L_CURRENT_MAX			200.0	// Current limit in Amperes (Upper)
+    #define MCCONF_L_CURRENT_MAX			210.0	// Current limit in Amperes (Upper)
     #define MCCONF_L_CURRENT_MIN			-20.0	// Current limit in Amperes (Lower)
-    #define MCCONF_L_IN_CURRENT_MAX			120.00	// Input current limit in Amperes (Upper)
+    #define MCCONF_L_IN_CURRENT_MAX			130.00	// Input current limit in Amperes (Upper)
     #define MCCONF_L_IN_CURRENT_MIN			-20.0	// Input current limit in Amperes (Lower)
 #endif
 
@@ -44,7 +44,8 @@
 #define MCCONF_FOC_SL_OPENLOOP_TIME		0.02
 
 #if AW_BOARD == DEF_AW_BOARD_RVEXPLORE
-    #define MCCONF_L_RPM_MAX				(4900 * AW_ERPM_DIVIDER)	// The motor speed limit (Upper)
+    #define MCCONF_L_RPM_MAX				+(5500 * AW_ERPM_DIVIDER)	// The motor speed limit (Upper)
+    #define MCCONF_L_RPM_MIN				-(5500 * AW_ERPM_DIVIDER)	// The motor speed limit (Upper)
     #undef AW_CURRENT_RAMP_LIMIT
     #define AW_CURRENT_RAMP_LIMIT           100    // A/s - the fastest overall change of current allowed
 #endif

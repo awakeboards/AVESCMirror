@@ -27,14 +27,14 @@ typedef enum {
 #define DEF_AW_MOTOR_ASTRO              1
 #define DEF_AW_MOTOR_AMOTOR             2
 #define DEF_AW_MOTOR_VINGA              3
-#define DEF_AW_MOTOR_GOAT           4
+#define DEF_AW_MOTOR_AMOTORV3           4
 
 typedef enum {
     AW_MOTOR_UNKNOWN = 0,
     AW_MOTOR_ASTRO = DEF_AW_MOTOR_ASTRO,
     AW_MOTOR_AMOTOR = DEF_AW_MOTOR_AMOTOR,
     AW_MOTOR_VINGA = DEF_AW_MOTOR_VINGA,
-    AW_MOTOR_GOAT = DEF_AW_MOTOR_GOAT
+    AW_MOTOR_AMOTORV3 = DEF_AW_MOTOR_AMOTORV3
 } aw_motor_type;
 
 // Shunts
