@@ -26,10 +26,10 @@
 // Settings
 #define TIM_PERIOD			(((168000000 / 2 / WS2811_CLK_HZ) - 1))
 #define LED_BUFFER_LEN		(WS2811_LED_NUM + 1)
-#define BITBUFFER_PAD		50
+#define BITBUFFER_PAD		250
 #define BITBUFFER_LEN		(24 * LED_BUFFER_LEN + BITBUFFER_PAD)
 #define WS2811_ZERO			(TIM_PERIOD * 0.2)
-#define WS2811_ONE			(TIM_PERIOD * 0.8)
+#define WS2811_ONE			(TIM_PERIOD * 0.48)
 
 // Private variables
 static uint16_t bitbuffer[BITBUFFER_LEN];
@@ -81,12 +81,12 @@ void ws2811_init(void) {
 #if WS2811_USE_CH2
 	palSetPadMode(GPIOB, 7,
 			PAL_MODE_ALTERNATE(GPIO_AF_TIM4) |
-			PAL_STM32_OTYPE_OPENDRAIN |
+			PAL_STM32_OTYPE_PUSHPULL |
 			PAL_STM32_OSPEED_MID1);
 #else
 	palSetPadMode(GPIOB, 6,
 			PAL_MODE_ALTERNATE(GPIO_AF_TIM4) |
-			PAL_STM32_OTYPE_OPENDRAIN |
+			PAL_STM32_OTYPE_PUSHPULL |
 			PAL_STM32_OSPEED_MID1);
 #endif
 
@@ -249,5 +249,5 @@ static uint32_t rgb_to_local(uint32_t color) {
 	g = gamma_table[g];
 	b = gamma_table[b];
 
-	return (g << 16) | (r << 8) | b;
+	return (r << 16) | (g << 8) | b;
 }

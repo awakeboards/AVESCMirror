@@ -28,6 +28,9 @@ void app_custom_start(void) {
     // init throttle curves and settings
     aw_init_throttle();
 
+    // init servos
+    aw_init_servos();
+
     // init can communication
 	comm_can_set_sid_rx_callback(tb_can_sid_callback);
 	comm_can_set_eid_rx_callback(tb_can_eid_callback);
@@ -75,6 +78,15 @@ static THD_FUNCTION(aw_thread, arg) {
 
 	chRegSetThreadName("Awake TB App");
 	is_running = true;
+
+    // Set external LEDs to black at boot
+	ws2811_set_brightness(100);
+	ws2811_set_all(COLOR_BLACK);
+
+    // On RVEXPLOREBRABUS, set the color to white by default, then it can be changed by the BP via CAN
+    #if AW_BOARD == DEF_AW_BOARD_RVEXPLOREBRABUS
+    ws2811_set_led_color(1, AW_RGB(255, 255, 255));
+ 	#endif
 
     aw_led_indication indication;
 	for (;;) {
@@ -190,6 +202,26 @@ static bool tb_can_sid_callback(uint32_t id, uint8_t *data_in, uint8_t len) {
             ((volatile mc_configuration*) mc_interface_get_configuration())->l_in_current_max = max_battery_current;
         }
         return true;
+    case AW_CAN_AVESC_SET_LED:
+        {
+            uint8_t led_red = data_in[0];
+            uint8_t led_green = data_in[1];
+            uint8_t led_blue = data_in[2];
+            uint8_t led_white = data_in[3];
+			ws2811_set_led_color(0, AW_RGB(led_red, led_green, led_blue));
+            ws2811_set_led_color(1, AW_RGB(led_white, led_white, led_white));
+        }
+        return true;
+    case AW_CAN_AVESC_SET_SERVOS:
+      {
+			int32_t ind = 0;
+			int16_t servo1 = buffer_get_int16(data_in, &ind);
+			int16_t servo2 = buffer_get_int16(data_in, &ind);
+			int16_t servo3 = buffer_get_int16(data_in, &ind);
+			int16_t servo4 = buffer_get_int16(data_in, &ind);
+			aw_update_servos(servo1, servo2, servo3, servo4);
+      }
+      return true;
 	default:
 		return false;
 	}

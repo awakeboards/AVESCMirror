@@ -3,6 +3,7 @@
 // Awake settings
 #define AW_ERPM_DIVIDER                 5
 #define AW_CURRENT_RAMP_LIMIT           1000    // A/s - the fastest overall change of current allowed
+#define AW_MIN_ACTIVE_CURRENT           5       // A - minimal current during a normal motor operation
 
 // Duty limiter to prevent idle-run oscillation
 #define AW_DUTY_LIMITER_MIN             0.20 // min. duty cycle limit we apply

@@ -537,6 +537,7 @@ void pwm_lld_start(PWMDriver *pwmp) {
   switch (pwmp->config->channels[0].mode & PWM_OUTPUT_MASK) {
   case PWM_OUTPUT_ACTIVE_LOW:
     ccer |= STM32_TIM_CCER_CC1P;
+    /* fall through */
   case PWM_OUTPUT_ACTIVE_HIGH:
     ccer |= STM32_TIM_CCER_CC1E;
   default:
@@ -545,6 +546,7 @@ void pwm_lld_start(PWMDriver *pwmp) {
   switch (pwmp->config->channels[1].mode & PWM_OUTPUT_MASK) {
   case PWM_OUTPUT_ACTIVE_LOW:
     ccer |= STM32_TIM_CCER_CC2P;
+    /* fall through */
   case PWM_OUTPUT_ACTIVE_HIGH:
     ccer |= STM32_TIM_CCER_CC2E;
   default:
@@ -553,6 +555,7 @@ void pwm_lld_start(PWMDriver *pwmp) {
   switch (pwmp->config->channels[2].mode & PWM_OUTPUT_MASK) {
   case PWM_OUTPUT_ACTIVE_LOW:
     ccer |= STM32_TIM_CCER_CC3P;
+    /* fall through */
   case PWM_OUTPUT_ACTIVE_HIGH:
     ccer |= STM32_TIM_CCER_CC3E;
   default:
@@ -561,6 +564,7 @@ void pwm_lld_start(PWMDriver *pwmp) {
   switch (pwmp->config->channels[3].mode & PWM_OUTPUT_MASK) {
   case PWM_OUTPUT_ACTIVE_LOW:
     ccer |= STM32_TIM_CCER_CC4P;
+    /* fall through */
   case PWM_OUTPUT_ACTIVE_HIGH:
     ccer |= STM32_TIM_CCER_CC4E;
   default:

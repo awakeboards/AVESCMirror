@@ -6,6 +6,7 @@
 // Awake settings
 #define AW_ERPM_DIVIDER                 5
 #define AW_CURRENT_RAMP_LIMIT           1000    // A/s - the fastest overall change of current allowed
+#define AW_MIN_ACTIVE_CURRENT           10      // A - minimal current during a normal motor operation
 
 // Duty limiter to prevent idle-run oscillation
 #define AW_DUTY_LIMITER_MIN 0.20 // min. duty cycle limit we apply
@@ -14,16 +15,18 @@
 
 #define MCCONF_M_INVERT_DIRECTION		true
 
+#define MCCONF_CC_MIN_CURRENT           AW_MIN_ACTIVE_CURRENT
+
 // Limits
 #if AW_BOARD == DEF_AW_BOARD_RVEXPLORE
-    #define MCCONF_L_CURRENT_MAX			200.0	// Current limit in Amperes (Upper)
+    #define MCCONF_L_CURRENT_MAX			190.0	// Current limit in Amperes (Upper)
     #define MCCONF_L_CURRENT_MIN			-20.0	// Current limit in Amperes (Lower)
-    #define MCCONF_L_IN_CURRENT_MAX			120.00	// Input current limit in Amperes (Upper)
+    #define MCCONF_L_IN_CURRENT_MAX			110.00	// Input current limit in Amperes (Upper)
     #define MCCONF_L_IN_CURRENT_MIN			-20.0	// Input current limit in Amperes (Lower)
-#else // DEF_AW_BOARD_RVULTIMATE
-    #define MCCONF_L_CURRENT_MAX			210.0	// Current limit in Amperes (Upper)
+#else // DEF_AW_BOARD_RVULTIMATE and DEF_AW_BOARD_RVEXPLOREBRABUS
+    #define MCCONF_L_CURRENT_MAX			190.0	// Current limit in Amperes (Upper)
     #define MCCONF_L_CURRENT_MIN			-20.0	// Current limit in Amperes (Lower)
-    #define MCCONF_L_IN_CURRENT_MAX			130.00	// Input current limit in Amperes (Upper)
+    #define MCCONF_L_IN_CURRENT_MAX			110.00	// Input current limit in Amperes (Upper)
     #define MCCONF_L_IN_CURRENT_MIN			-20.0	// Input current limit in Amperes (Lower)
 #endif
 

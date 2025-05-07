@@ -14,7 +14,12 @@
 #include "timeout.h"
 #include "buffer.h"
 
+#include "ws2811.h"
+
 #include "aw_throttle.h"
+#include "aw_servos.h"
+
+#define AW_RGB(r, g, b) ((uint32_t)((((r) & 0xFF) << 16) | (((g) & 0xFF) << 8) | ((b) & 0xFF)))
 
 typedef enum {
     AW_LED_BLINK = 0,

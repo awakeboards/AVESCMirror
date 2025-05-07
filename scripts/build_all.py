@@ -9,24 +9,25 @@ production = True
 if production:
     pcb_versions = ["AVESC23"]
     motor_types = ["AMOTOR", "ASTRO", "VINGA", "AMOTORV3"]
-    board_types = ["RV3", "RVS", "VINGA", "RVEXPLORE", "RVULTIMATE"]
+    board_types = ["RV3", "RVS", "VINGA", "RVEXPLORE", "RVULTIMATE", "RVEXPLOREBRABUS"]
     shunt_types = ["SH100", "SH200"]
 else:
     pcb_versions = ["AVESC23"]  # ["AVESC23", "AVESC25"]
     motor_types = ["AMOTORV3"]  # ["AMOTOR", "ASTRO", "VINGA", ...]
-    board_types = ["RVEXPLORE"]  # ["RV1", "RV3", "RVS", "VINGA", "RVEXPLORE", "RVADVENTURE", "RVULTIMATE"]
-    shunt_types = ["SH200", "SH100"]  # ["SH100", "SH200"]
+    board_types = ["RVULTIMATE"]  # ["RV1", "RV3", "RVS", "VINGA", "RVEXPLORE", "RVADVENTURE", "RVULTIMATE", "RVEXPLOREBRABUS"]
+    shunt_types = ["SH100", "SH200"]  # ["SH100", "SH200"]
 
 # Define invalid combinations
 exclusions = [
-    r'.*?_\d{4}_RV1_(?!(ASTRO))',
-    r'.*?_\d{4}_RV3_(?!(AMOTOR))',
-    r'.*?_\d{4}_RVS_(?!(AMOTOR))',
-    r'.*?_\d{4}_RVBRABUS_(?!(AMOTOR))',
-    r'.*?_\d{4}_RVADVENTURE_(?!(AMOTOR))',
-    r'.*?_\d{4}_RVEXPLORE_(?!(AMOTORV3))',
-    r'.*?_\d{4}_RVULTIMATE_(?!(AMOTORV3))',
-    r'.*?_\d{4}_VINGA_(?!(VINGA))',
+    r'.*?_\d{4}_RV1_(?!(ASTRO_))',
+    r'.*?_\d{4}_RV3_(?!(AMOTOR_))',
+    r'.*?_\d{4}_RVS_(?!(AMOTOR_))',
+    r'.*?_\d{4}_RVBRABUS_(?!(AMOTOR_))',
+    r'.*?_\d{4}_RVADVENTURE_(?!(AMOTOR_))',
+    r'.*?_\d{4}_RVEXPLORE_(?!(AMOTORV3_))',
+    r'.*?_\d{4}_RVEXPLOREBRABUS_(?!(AMOTORV3_))',
+    r'.*?_\d{4}_RVULTIMATE_(?!(AMOTORV3_))',
+    r'.*?_\d{4}_VINGA_(?!(VINGA_))',
     r'AVESC25_(.*?)_SH100',  # AVESC25 only has SH200 configuration
 ]
 
@@ -63,7 +64,7 @@ for pcb_version in pcb_versions:
                     if pattern.search(version_name):
                         should_skip = True
 
-                if should_skip:
+                if production and should_skip:
                     continue
 
                 print("Building firmware: " + version_name)

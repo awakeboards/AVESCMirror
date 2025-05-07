@@ -8,7 +8,6 @@ static const float* aw_curve_extreme;
 static const float* aw_curve_sport;
 static const float* aw_curve_eco;
 static const float* aw_curve_kids;
-static float aw_min_active_current;
 
 // Private functions
 static float aw_startup_current_logic(systime_t time_zero_throttle);
@@ -21,16 +20,12 @@ void aw_init_throttle(void) {
         aw_curve_sport = aw_curve_vinga_sport;
         aw_curve_eco = aw_curve_vinga_eco;
         aw_curve_kids = aw_curve_vinga_kids; // slow mode
-
-        aw_min_active_current = AW_VINGA_MIN_ACTIVE_CURRENT;
     } else { // Ravik series boards
         aw_curve_brabus = aw_curve_ravik_brabus; // only for RVBRABUS boards
         aw_curve_extreme = aw_curve_ravik_extreme;
         aw_curve_sport = aw_curve_ravik_sport;
         aw_curve_eco = aw_curve_ravik_eco;
         aw_curve_kids = aw_curve_ravik_kids; // slow mode
-
-        aw_min_active_current = AW_RAVIK_MIN_ACTIVE_CURRENT;
     }
 }
 
@@ -104,5 +99,5 @@ static float aw_throttle_to_current(uint8_t throttle, uint8_t mode) {
     float current = i_p * mc_interface_get_configuration()->l_current_max;
 
     // limit minimal current for smoother startup
-    return current < aw_min_active_current ? aw_min_active_current : current;
+    return current < AW_MIN_ACTIVE_CURRENT ? AW_MIN_ACTIVE_CURRENT : current;
 }

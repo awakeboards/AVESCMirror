@@ -239,6 +239,13 @@ int main(void) {
 	comm_can_init();
 #endif
 
+#if WS2811_ENABLE
+	ws2811_init();
+#if !WS2811_TEST
+//	led_external_init();
+#endif
+#endif
+
 	app_configuration *appconf = mempools_alloc_appconf();
 	conf_general_read_app_configuration(appconf);
 	app_set_configuration(appconf);
@@ -259,13 +266,6 @@ int main(void) {
 				HW_SPI_PORT_MISO, HW_SPI_PIN_MISO);
 		HW_PERMANENT_NRF_FAILED_HOOK();
 	}
-#endif
-
-#if WS2811_ENABLE
-	ws2811_init();
-#if !WS2811_TEST
-	led_external_init();
-#endif
 #endif
 
 #if SERVO_OUT_ENABLE
@@ -321,15 +321,15 @@ int main(void) {
 			for (unsigned int i = 0;i < sizeof(colors) / sizeof(uint32_t);i++) {
 				ws2811_set_all(colors[i]);
 
-				for (int i = 0;i < brightness_set;i++) {
-					ws2811_set_brightness(i);
+				for (int i2 = 0;i2 < brightness_set;i2++) {
+					ws2811_set_brightness(i2);
 					chThdSleepMilliseconds(2);
 				}
 
 				chThdSleepMilliseconds(100);
 
-				for (int i = 0;i < brightness_set;i++) {
-					ws2811_set_brightness(brightness_set - i);
+				for (int i2 = 0;i2 < brightness_set;i2++) {
+					ws2811_set_brightness(brightness_set - i2);
 					chThdSleepMilliseconds(2);
 				}
 			}

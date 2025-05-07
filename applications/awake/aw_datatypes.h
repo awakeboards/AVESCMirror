@@ -2,14 +2,15 @@
 #define AVESC_AW_DATATYPES_H
 
 // Boards
-#define DEF_AW_BOARD_RV1            1
-#define DEF_AW_BOARD_RV3            2
-#define DEF_AW_BOARD_RVS            3
-#define DEF_AW_BOARD_VINGA          4
-#define DEF_AW_BOARD_RVEXPLORE      5 // beginner board
-#define DEF_AW_BOARD_RVBRABUS       6
-#define DEF_AW_BOARD_RVULTIMATE     7 // old S
-#define DEF_AW_BOARD_RVADVENTURE    8 // old 3
+#define DEF_AW_BOARD_RV1                1
+#define DEF_AW_BOARD_RV3                2
+#define DEF_AW_BOARD_RVS                3
+#define DEF_AW_BOARD_VINGA              4
+#define DEF_AW_BOARD_RVEXPLORE          5 // beginner board
+#define DEF_AW_BOARD_RVBRABUS           6 // BRABUS x Awake Shadow
+#define DEF_AW_BOARD_RVULTIMATE         7 // old S
+#define DEF_AW_BOARD_RVADVENTURE        8 // old 3
+#define DEF_AW_BOARD_RVEXPLOREBRABUS    9 // BRABUS x Awake Shadow Explore
 
 typedef enum {
     AW_BOARD_RV = 0,
@@ -21,6 +22,7 @@ typedef enum {
     AW_BOARD_RVBRABUS = DEF_AW_BOARD_RVBRABUS,
     AW_BOARD_RVULTIMATE = DEF_AW_BOARD_RVULTIMATE,
     AW_BOARD_RVADVENTURE = DEF_AW_BOARD_RVADVENTURE,
+    AW_BOARD_RVEXPLOREBRABUS = DEF_AW_BOARD_RVEXPLOREBRABUS
 } aw_board_type;
 
 // Motors
@@ -63,7 +65,9 @@ typedef enum {
     AW_CAN_TB_MBS_TYPE = 50,
     AW_CAN_TB_AVESC_VERSION = 51,
     AW_CAN_TB_LOCK_CONTROL = 52,
-    AW_CAN_AVESC_SET_CURRENT_LIMITS = 53
+    AW_CAN_AVESC_SET_CURRENT_LIMITS = 53,
+    AW_CAN_AVESC_SET_SERVOS = 54,
+    AW_CAN_AVESC_SET_LED = 55
 } aw_can_type;
 
 typedef enum {
